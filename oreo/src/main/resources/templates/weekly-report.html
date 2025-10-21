@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; }
+    .header { background-color: #007bff; color: white; padding: 15px; border-radius: 8px; }
+    .metric { display: inline-block; margin: 10px; padding: 10px; background: #f0f0f0; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>🍪 Reporte Semanal Oreo</h2>
+  </div>
+  <p>Esta semana vendimos <strong>${totalUnits} unidades</strong> generando <strong>$${totalRevenue}</strong>.</p>
+  <div class="metric"><h4>Top SKU</h4><p>${topSku}</p></div>
+  <div class="metric"><h4>Sucursal Top</h4><p>${topBranch}</p></div>
+  <p>${summary}</p>
+  <p>Atentamente,<br/>Equipo Oreo Insight Factory 🍪</p>
+</body>
+</html>

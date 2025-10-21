@@ -10,5 +10,6 @@ import lombok.*;
 @Setter
 @Builder
 public class Auth {
+
 }
 

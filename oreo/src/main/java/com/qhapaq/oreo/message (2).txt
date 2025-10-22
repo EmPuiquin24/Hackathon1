@@ -1,0 +1,304 @@
+{
+  "info": {
+    "name": "Hackathon1 - 01",
+    "_postman_id": "c58f1a8d-oreo-01-collection-es",
+    "description": "Colección oficial del Hackathon #1: Oreo Insight Factory 🍪📈 (nombres en español según README)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "centralToken", "value": "" },
+    { "key": "branchToken", "value": "" },
+    { "key": "branchName", "value": "Miraflores" },
+    { "key": "centralUserId", "value": "" },
+    { "key": "branchUserId", "value": "" },
+    { "key": "saleId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Autenticación JWT",
+      "item": [
+        {
+          "name": "Registrar usuario — POST /auth/register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"oreo.admin\",\n  \"email\": \"admin@oreo.com\",\n  \"password\": \"Oreo1234\",\n  \"role\": \"CENTRAL\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Iniciar sesión — POST /auth/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"oreo.admin\",\n  \"password\": \"Oreo1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.token) pm.environment.set('centralToken', json.token);",
+                  "  if (json.id) pm.environment.set('centralUserId', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar usuario BRANCH — POST /auth/register (BRANCH)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"miraflores.user\",\n  \"email\": \"mira@oreo.com\",\n  \"password\": \"Oreo1234\",\n  \"role\": \"BRANCH\",\n  \"branch\": \"Miraflores\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Iniciar sesión BRANCH — POST /auth/login (BRANCH)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"miraflores.user\",\n  \"password\": \"Oreo1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.token) pm.environment.set('branchToken', json.token);",
+                  "  if (json.id) pm.environment.set('branchUserId', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gestión de Ventas",
+      "item": [
+        {
+          "name": "Crear venta — POST /sales",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{centralToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/sales",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"OREO_CLASSIC_12\",\n  \"units\": 25,\n  \"price\": 1.99,\n  \"branch\": \"Miraflores\",\n  \"soldAt\": \"2025-09-01T10:30:00Z\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.id) pm.environment.set('saleId', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener detalle de venta — GET /sales/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{centralToken}}" }
+            ],
+            "url": "{{baseUrl}}/sales/{{saleId}}"
+          }
+        },
+        {
+          "name": "Listar ventas — GET /sales",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{centralToken}}" }
+            ],
+            "url": "{{baseUrl}}/sales?from=2025-09-01&to=2025-09-07"
+          }
+        },
+        {
+          "name": "Listar ventas (sucursal) — GET /sales?branch={branch}",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{branchToken}}" }
+            ],
+            "url": "{{baseUrl}}/sales?branch={{branchName}}"
+          }
+        },
+        {
+          "name": "Actualizar venta — PUT /sales/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{centralToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/sales/{{saleId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"OREO_CLASSIC_12\",\n  \"units\": 30,\n  \"price\": 1.99,\n  \"branch\": \"Miraflores\",\n  \"soldAt\": \"2025-09-01T10:30:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar venta — DELETE /sales/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{centralToken}}" }
+            ],
+            "url": "{{baseUrl}}/sales/{{saleId}}"
+          }
+        },
+        {
+          "name": "Crear venta (ejemplo Forbidden) — POST /sales (BRANCH intentando otra sucursal)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{branchToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/sales",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"OREO_THINS\",\n  \"units\": 15,\n  \"price\": 2.49,\n  \"branch\": \"San Isidro\",\n  \"soldAt\": \"2025-09-01T09:00:00Z\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Resumen Semanal ASÍNCRONO",
+      "item": [
+        {
+          "name": "Resumen semanal (async) — POST /sales/summary/weekly",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{centralToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/sales/summary/weekly",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": \"2025-09-01\",\n  \"to\": \"2025-09-07\",\n  \"branch\": \"Miraflores\",\n  \"emailTo\": \"gerente@oreo.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Resumen semanal (async) — POST /sales/summary/weekly (BRANCH sin fechas)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{branchToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/sales/summary/weekly",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emailTo\": \"gerente@oreo.com\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reto Extra — Premium",
+      "item": [
+        {
+          "name": "Resumen semanal premium — POST /sales/summary/weekly/premium",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{centralToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/sales/summary/weekly/premium",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": \"2025-09-01\",\n  \"to\": \"2025-09-07\",\n  \"branch\": \"Miraflores\",\n  \"emailTo\": \"gerente@oreo.com\",\n  \"format\": \"PREMIUM\",\n  \"includeCharts\": true,\n  \"attachPdf\": true\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gestión de Usuarios (solo CENTRAL)",
+      "item": [
+        {
+          "name": "Listar usuarios — GET /users",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{centralToken}}" }
+            ],
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "Ver detalle de usuario — GET /users/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{centralToken}}" }
+            ],
+            "url": "{{baseUrl}}/users/{{branchUserId}}"
+          }
+        },
+        {
+          "name": "Eliminar usuario — DELETE /users/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{centralToken}}" }
+            ],
+            "url": "{{baseUrl}}/users/{{branchUserId}}"
+          }
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,6 +1,7 @@
 package com.qhapaq.oreo.ai.domain;
 
 
+import com.qhapaq.oreo.sales.dto.SalesAggregatesDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

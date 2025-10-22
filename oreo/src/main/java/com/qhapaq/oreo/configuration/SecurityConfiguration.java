@@ -1,5 +1,6 @@
 package com.qhapaq.oreo.configuration;
 
+import com.qhapaq.oreo.jwt.JwtAuthenticatorFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -17,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import org.sparky.sparkyai.jwt.domain.JwtAuthenticatorFilter;
 
 import lombok.RequiredArgsConstructor;
 

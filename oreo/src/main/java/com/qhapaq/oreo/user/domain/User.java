@@ -38,10 +38,15 @@ public class User implements UserDetails {
     @NotNull
     private String email;
 
+
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @NotNull
     private Role role;
+
+    @Column
+    private String branch;
 
     @Column
     private Boolean isBranch; //Obligatorio si role es "BRANCH", null si es "CENTRAL"

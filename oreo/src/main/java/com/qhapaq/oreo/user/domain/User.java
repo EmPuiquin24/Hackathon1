@@ -43,7 +43,6 @@ public class User implements UserDetails {
     @NotNull
     private Role role;
 
-
     @Column
     private String branch;
 

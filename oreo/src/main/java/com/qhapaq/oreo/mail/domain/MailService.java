@@ -1,6 +1,6 @@
-package com.oreoinsight.mail.domain;
+package com.qhapaq.oreo.mail.domain;
 
-import com.oreoinsight.common.exception.MailDeliveryException;
+import com.qhapaq.oreo.mail.exception.MailDeliveryException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

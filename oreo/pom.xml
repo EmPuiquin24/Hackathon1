@@ -92,6 +92,18 @@
             <artifactId>dotenv-java</artifactId>
             <version>2.3.2</version>
         </dependency>
+        <!-- WebClient (para GitHub Models) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <!-- JavaMail (para enviar correos) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

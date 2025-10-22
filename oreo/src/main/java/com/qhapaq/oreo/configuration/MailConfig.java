@@ -1,50 +1,49 @@
-package com.oreoinsight.mail.domain;
+package com.qhapaq.oreo.configuration;
 
-import com.oreoinsight.common.exception.MailDeliveryException;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class MailService {
+import java.util.Properties;
 
-    private final JavaMailSender mailSender;
+/**
+ * Configuración del servicio de correo SMTP.
+ * Compatible con Gmail, Mailtrap, y otros proveedores.
+ */
+@Configuration
+public class MailConfig {
+
+    @Value("${MAIL_HOST}")
+    private String host;
+
+    @Value("${MAIL_PORT}")
+    private int port;
 
     @Value("${MAIL_USERNAME}")
-    private String from;
+    private String username;
 
-    /**
-     * Envía un correo simple (texto o HTML) al destinatario.
-     *
-     * @param to      Destinatario
-     * @param subject Asunto del correo
-     * @param body    Cuerpo del mensaje (texto plano o HTML)
-     */
-    public void sendMail(String to, String subject, String body) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+    @Value("${MAIL_PASSWORD}")
+    private String password;
 
-            helper.setFrom(from);
-            helper.setTo(to);
-            helper.setSubject(subject);
+    @Bean
+    public JavaMailSender javaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
-            // Detecta si el cuerpo parece HTML
-            boolean isHtml = body.contains("<html>") || body.contains("<body>");
-            helper.setText(body, isHtml);
+        // Configuración básica
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+        mailSender.setUsername(username);
+        mailSender.setPassword(password);
 
-            mailSender.send(message);
-            log.info("Correo enviado exitosamente a {}", to);
-        } catch (MessagingException e) {
-            log.error("Error al enviar correo a {}: {}", to, e.getMessage());
-            throw new MailDeliveryException("No se pudo enviar el correo a " + to);
-        }
+        // Propiedades adicionales para conexión segura
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "false"); // cambia a true si necesitas depurar
+
+        return mailSender;
     }
 }

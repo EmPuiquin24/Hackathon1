@@ -19,23 +19,26 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('CENTRAL')")
-    public Page<User> getAllUsers(
+    public ResponseEntity<Page<User>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return userService.getAllUsers(pageable);
+        Page<User> users = userService.getAllUsers(pageable);
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('CENTRAL')")
-    public User getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('CENTRAL')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
+
 }

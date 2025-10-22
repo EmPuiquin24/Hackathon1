@@ -1,26 +1,23 @@
 package com.qhapaq.oreo.user.dto;
 
 import com.qhapaq.oreo.user.domain.Role;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 public class CreateUserDto {
 
-    @NotNull
     @NotBlank
+    @Size(min = 3, max = 30)
+    @Pattern(regexp = "^[A-Za-z0-9_.]+$", message = "Username can contain letters, numbers, underscore and dot only")
     private String username;
 
-    @NotNull
     @NotBlank
-    @Email
+    @Email(message = "Email should be valid")
     private String email;
 
-    @NotNull
     @NotBlank
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
     @NotNull

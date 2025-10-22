@@ -2,7 +2,6 @@ package com.qhapaq.oreo.auth.domain;
 
 import com.qhapaq.oreo.auth.dto.JwtAuthLoginDto;
 import com.qhapaq.oreo.auth.dto.JwtAuthResponseDto;
-import com.qhapaq.oreo.auth.dto.JwtRegisterRequestDto;
 import com.qhapaq.oreo.jwt.JwtService;
 import com.qhapaq.oreo.user.domain.User;
 import com.qhapaq.oreo.user.domain.UserService;
@@ -35,11 +34,19 @@ public class AuthService {
         return response;
     }
 
-    public JwtAuthResponseDto jwtRegister(JwtRegisterRequestDto registerDto) {
-        ModelMapper modelMapper = new ModelMapper();
-        CreateUserDto createUserDto = modelMapper.map(registerDto, CreateUserDto.class);
+//    public JwtAuthResponseDto jwtRegister(JwtRegisterRequestDto registerDto) {
+//        ModelMapper modelMapper = new ModelMapper();
+//        CreateUserDto createUserDto = modelMapper.map(registerDto, CreateUserDto.class);
+//
+//        User user = userService.createUser(createUserDto);
+//
+//        JwtAuthResponseDto response = new JwtAuthResponseDto();
+//        response.setToken(jwtService.generateToken(user));
+//        return response;
+//    }
 
-        User user = userService.createUser(createUserDto);
+    public JwtAuthResponseDto jwtRegister(CreateUserDto userDto) {
+        User user = userService.createUser(userDto);
 
         JwtAuthResponseDto response = new JwtAuthResponseDto();
         response.setToken(jwtService.generateToken(user));

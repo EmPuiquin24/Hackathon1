@@ -1,9 +1,12 @@
 package com.qhapaq.oreo.user.domain;
 
+import com.qhapaq.oreo.user.dto.CreateUserDto;
 import com.qhapaq.oreo.user.infrastructure.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,28 +36,29 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User createUser(JwtRegisterRequestDto registerDto) {
-        // Check if username already exists
-        if (userRepository.findByUsername(registerDto.getUsername()).isPresent()) {
+    public User createUser(CreateUserDto createUserDto) {
+        if (userRepository.findByUsername(createUserDto.getUsername()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
         }
 
-        // Check if email already exists
-        if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(createUserDto.getEmail()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
         }
 
-        // Create new user
-        User user = User.builder()
-                .username(registerDto.getUsername())
-                .email(registerDto.getEmail())
-                .password(passwordEncoder.encode(registerDto.getPassword()))
-                .role(registerDto.getRole())
-                .branch(registerDto.getBranch())
-                .build();
-
+        User user = modelMapper.map(createUserDto, User.class);
         return userRepository.save(user);
     }
 
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        userRepository.deleteById(id);
+    }
 }
 

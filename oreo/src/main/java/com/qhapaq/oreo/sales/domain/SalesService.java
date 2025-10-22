@@ -33,7 +33,7 @@ public class SalesService {
 
     public Sales createSale(CreateSaleDto dto, User user) {
         // BRANCH solo puede crear ventas de su sucursal
-        if (user.getRole() == Role.ROLE_BRANCH && !dto.getBranch().equals(user.getBranch())) {
+        if (user.getRole() == Role.BRANCH && !dto.getBranch().equals(user.getBranch())) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "You can only create sales for your assigned branch: " + user.getBranch()
@@ -53,7 +53,7 @@ public class SalesService {
                 ));
 
         // BRANCH solo puede ver ventas de su sucursal
-        if (user.getRole() == Role.ROLE_BRANCH && !sale.getBranch().equals(user.getBranch())) {
+        if (user.getRole() == Role.BRANCH && !sale.getBranch().equals(user.getBranch())) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "You can only view sales from your assigned branch"
@@ -65,7 +65,7 @@ public class SalesService {
 
     public Page<Sales> getSales(Instant from, Instant to, String branch, int page, int size, User user) {
         // Si es BRANCH, forzar su sucursal
-        String effectiveBranch = (user.getRole() == Role.ROLE_BRANCH) ? user.getBranch() : branch;
+        String effectiveBranch = (user.getRole() == Role.BRANCH) ? user.getBranch() : branch;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("soldAt").descending());
 
@@ -82,7 +82,7 @@ public class SalesService {
 
     public Sales updateSale(Sales sale, UpdateSaleDto dto, User user) {
         // BRANCH solo puede actualizar ventas de su sucursal
-        if (user.getRole() == Role.ROLE_BRANCH && !sale.getBranch().equals(user.getBranch())) {
+        if (user.getRole() == Role.BRANCH && !sale.getBranch().equals(user.getBranch())) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "You can only update sales from your assigned branch"
@@ -96,7 +96,7 @@ public class SalesService {
 
         if (dto.getBranch() != null) {
             // BRANCH no puede cambiar a otra sucursal
-            if (user.getRole() == Role.ROLE_BRANCH && !dto.getBranch().equals(user.getBranch())) {
+            if (user.getRole() == Role.BRANCH && !dto.getBranch().equals(user.getBranch())) {
                 throw new ResponseStatusException(
                         HttpStatus.FORBIDDEN,
                         "You cannot change the branch to a different one"

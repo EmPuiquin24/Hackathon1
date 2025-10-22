@@ -20,9 +20,9 @@ public class BranchDtoValidator implements ConstraintValidator<BranchDtoConstrai
             return true; // let @NotNull on role handle absence
         }
 
-        if (role == Role.ROLE_BRANCH) {
+        if (role == Role.BRANCH) {
             return branch != null && !branch.trim().isEmpty();
-        } else if (role == Role.ROLE_CENTRAL) {
+        } else if (role == Role.CENTRAL) {
             return branch == null;
         }
 

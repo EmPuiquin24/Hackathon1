@@ -1,6 +1,7 @@
 package com.qhapaq.oreo.configuration;
 
 import com.qhapaq.oreo.jwt.JwtAuthenticatorFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -17,8 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import lombok.RequiredArgsConstructor;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -29,16 +28,24 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return http
+                // 🔒 Desactiva CSRF (usamos JWT, no sesiones)
+                .csrf(AbstractHttpConfigurer::disable)
+                // 🌐 Permite CORS
                 .cors(Customizer.withDefaults())
+                // ⚙️ Sesiones sin estado (stateless)
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 🧱 Filtro JWT antes del UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthenticatorFilter, UsernamePasswordAuthenticationFilter.class)
+                // ✅ Configura rutas públicas y protegidas
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/auth/**").permitAll()   // login, registro, refresh token
+                        .requestMatchers("/public/**").permitAll() // rutas públicas opcionales
+                        .anyRequest().authenticated())             // todo lo demás requiere token válido
                 .build();
     }
 
+    // 🧩 Configura jerarquía y prefijo de roles para @PreAuthorize
     @Bean
     public static MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
         var expressionHandler = new DefaultMethodSecurityExpressionHandler();
@@ -47,20 +54,19 @@ public class SecurityConfiguration {
         return expressionHandler;
     }
 
+    // 🌍 CORS Global (para frontend como Angular, React, etc.)
     @Bean
     public WebMvcConfigurer corsMappingConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "PATCH")
-                        .maxAge(3600)
+                        .allowedOrigins("*") // ⚠️ en prod cámbialo a tu dominio frontend
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(false);
+                        .allowCredentials(false)
+                        .maxAge(3600);
             }
         };
     }
-
 }
-

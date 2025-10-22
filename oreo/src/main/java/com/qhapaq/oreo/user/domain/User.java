@@ -44,13 +44,12 @@ public class User implements UserDetails {
     private Role role;
 
     @Column
-    private String branch;
+    private Boolean isBranch; //Obligatorio si role es "BRANCH", null si es "CENTRAL"
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String roleName = role == null ? "ROLE_USER" : "ROLE_" + role.name();
         return List.of(new SimpleGrantedAuthority(roleName));
     }
-    
 }
 
